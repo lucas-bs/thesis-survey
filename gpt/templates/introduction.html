@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="chat-container">
+            <div class="chat-title">Introduction</div>
+            <p>
+                <b>
+                    Please carefully read the instructions below:
+                </b>
+            </p>
+            <div class="card my-4 p-4 shadow-sm">
+                <p>
+                    In the following pages you will be presented with a grid composed of 64 faced-down cards.
+                </p>
+                <p>
+                    Your task is to select any amount of cards that you wish to reveal.
+                </p>
+                <p>
+                    You earn <b>20 eurocents</b> for every card that is collected.
+                    <br>
+                    At any moment you can see the amount earned up to that point.
+                </p>
+                <p>
+                    Such earnings are only potential, however, because behind one of these cards hides a
+                    <b>special card that makes you loose everything that has been collected.</b>
+                    <br>The location of this special card is randomly determined,
+                    so it can be in any place with equal probability
+                </p>
+                <p>
+                    Your task is to choose how many cards to reveal. You do so by clicking on the cards you wish to
+                    reveal and hitting the button
+                    <i>'Reveal Cards'</i>.
+                </p>
+                <p>
+                    If you happen to have revealed the special card, you will earn €0.
+                    <br>Otherwise, you will earn the amount of money accumulated.
+
+                </p>
+            </div>
+            <p>
+                <strong>
+                    At the end of the survey, you will have the opportunity to win the money you have accumulated
+                    during the experiment. Therefore, please make decisions as if this were your own money.
+                </strong>
+            </p>
+            <form action="/introduction" method="post" class="d-flex justify-content-end">
+                <div class="input-group-append">
+                        <button type="submit" class="btn btn-dark">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .question-box {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

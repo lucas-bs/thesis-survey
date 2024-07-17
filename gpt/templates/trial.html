@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if trial_n == 1 %}
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="chat-container">
+            <div class="card my-4 p-4 shadow-sm">
+                You will start with a practice round. After that, the paying experiment starts.
+            </div>
+            <form action="/trial/1" method="post" class="d-flex justify-content-end">
+                <div class="input-group-append">
+                        <button type="submit" class="btn btn-dark">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% elif trial_n == 2 %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="chat-title">Trial</div>
+                    <div class="card my-4 p-4 shadow-sm">
+                        Select the cards by clicking on them.
+                        <br>
+                        The cards selected become yellow.
+                        <div id="game-container">
+                            <br>
+                            <div class="row justify-content-center">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <div class="total-money-box">
+                                        <p id="score">Your potential payout is: €0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div id="grid"></div>
+                            <div id="info">
+                                <p id="card-count">Selected: 0 | Remaining: 64</p>
+                            </div>
+                            <button id="reveal-btn">Reveal Cards</button>
+                            <br>
+                        </div>
+                        <script>
+                            const currentTaskNumber = {{ trial_n }};
+                            const isTrial = true;
+                        </script>
+                        <script src="{{ url_for('static', filename='js/bret_game1.js') }}"></script>
+                    </div>
+                    <form action="{{ url_for('trial', trial_n=trial_n + 1) }}" method="post" class="d-flex justify-content-end">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-dark">Next</button>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+    max-width: 100%;
+    padding: 0 10px;
+}
+.boxes {
+    width: 31px;
+    height: 31px;
+    background-color: #ccc;
+    border: 1px solid #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+}
+
+.boxes.selected {
+    background-color: #ffff00;
+}
+
+.boxes.revealed {
+    cursor: default;
+}
+
+.boxes.bomb {
+    background-color: #ff0000;
+}
+
+.boxes.safe {
+    background-color: #00ff00;
+}
+
+#info {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#reveal-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+body {
+    background-color: #f8f9fa;
+}
+.total-money-box {
+    padding: 20px; /* Increase padding for a bigger box */
+    background-color: #343a40;
+    color: white;
+    border-radius: 10px;
+    font-size: 2em; /* Increase font size */
+    text-align: center; /* Center align the text */
+    max-width: 500px; /* Set a maximum width if needed */
+    width: 100%; /* Make the box responsive */
+}
+.question-box {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+</style>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>{% block title %}TutorGPT{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #343a40; /* Dark background color */
+        }
+
+        .navbar-brand {
+            color: #ffffff; /* White color for brand */
+
+            font-size: 1.5em;
+        }
+        .navbar-brand:hover,
+        .navbar-brand:focus {
+            color: #ffffff !important; /* Keep the text white on hover and focus */
+            text-decoration: none; /* Remove underline on hover */
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ffffff; /* White color for toggler icon */
+        }
+
+        .nav-link {
+            color: #ffffff; /* White color for links */
+        }
+        .nav-link:hover {
+            color: #ffffff !important; /* Keep the text white on hover */
+            text-decoration: none; /* Remove underline on hover */
+        }
+        .navbar-nav .nav-link:focus,
+        .navbar-nav .nav-link:hover {
+            color: #ffffff !important; /* Ensure white color even with Bootstrap's focus styles */
+        }
+
+        .container-fluid {
+            margin-top: 30px;
+        }
+        .chat-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            }
+        .bot-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            }
+        .message {
+            margin-bottom: 0px;
+            padding: 10px;
+            border-radius: 10px;
+            }
+        .user-message {
+            margin-left: 0%;
+            background-color: #69C687;
+            color: #fff;
+            border-radius: 0px;
+            }
+        .response-message {
+            margin-right: 0%;
+            background-color: #A5A2A2;
+            color: #fff;
+            border-radius: 0px;
+            }
+        #message {
+            resize: vertical;
+            width: calc(100% - 38px);
+            max-height: 200px;
+            margin-bottom: 10px;
+            }
+
+        .input-group {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            }
+
+        #message {
+            flex: 1;
+            margin-bottom: 10px;
+            }
+
+        #send {
+            margin-left: 10px;
+            background-color: #69C687;
+            border-color: #69C687;
+            }
+
+        /* Add the background color to the right column */
+        .col-md-6:nth-child(2) .chat-container {
+            background-color: #f8f9fa; /* Slight grey background color */
+            border-radius: 10px; /* Add rounded corners */
+            }
+
+        .likert {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            }
+
+        .option {
+            text-align: center;
+            }
+
+        .option label {
+            display: block;
+            font-size: 1em;
+            }
+
+        .option input {
+            width: 15px;
+            height: 15px;
+            margin: 0 auto;
+            }
+
+        .login-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            }
+        .form-group {
+            margin-bottom: 20px;
+            }
+        .login-button {
+            width: 100%;
+            background-color: #69C687;
+            border-color: #69C687;
+            }
+
+        .custom-table th {
+            border-top: none;
+            }
+
+        .custom-table tbody tr:last-child td {
+            border-top: none;
+            border-bottom: 2px solid #EAEAEA;
+            }
+    </style>
+    {% block custom_css %}{% endblock %}
+
+    <script>
+        function preventBack() {
+            window.history.forward();
+        }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+    </script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="{{ url_for('login') }}">Thesis Survey</a>
+        {% if session.get('authenticated') %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            </ul>
+        {% else %}
+        {% endif %}
+    </nav>
+    {% block content %}
+
+    {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    {% block custom_js %}{% endblock %}
+
+</body>
+</html>

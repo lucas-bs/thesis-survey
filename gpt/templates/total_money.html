@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    {% set parts = message.split('|') %}
+    <script>
+        swal({
+            text: "{{ parts[0] }}",
+            icon: "{{ url_for('static', filename=parts[1]) }}",
+            button: "OK",
+        });
+    </script>
+    {% endfor %}
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="chat-container">
+            <div class="row justify-content-center">
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="total-money-box">
+                        Total Money: €<span id="total-money">{{ total_money }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <p>
+                Thank you for completing the tasks. For the next part of the survey,
+                please answer a few short questionnaires. Your responses are important for our analysis,
+                so please answer as accurately as possible.
+            </p>
+            <br>
+            <strong>
+                At the end of the survey, you will receive instructions on how to enter for a chance to win the prize money.
+            </strong>
+
+            <form action="/total_money" method="post" class="d-flex justify-content-end">
+                <div class="input-group-append">
+                        <button type="submit" class="btn btn-dark">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .question-box {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+        .total-money-box {
+        padding: 10px; /* Increase padding for a bigger box */
+        background-color: #343a40;
+        color: white;
+        border-radius: 5px;
+        font-size: 2em; /* Increase font size */
+        text-align: center; /* Center align the text */
+        max-width: 300px; /* Set a maximum width if needed */
+        width: 100%; /* Make the box responsive */
+    }
+</style>
+{% endblock %}

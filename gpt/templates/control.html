@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-8 col-lg-8">
+            <h2 class="text-center mt-4">Questionnaire 3</h2>
+            <div class="card my-4 p-4 shadow-sm">
+                For each statement, select the answer that best matches your opinion. There is no right or wrong answer.
+                <br>
+                <br>
+                <div class="question-box">
+                    <div class="row">
+                        <div class="custom-col">
+                            1 - Strongly Disagree
+                        </div>
+                        <div class="custom-col">
+                            2 - Disagree
+                        </div>
+                        <div class="custom-col">
+                            3 - Somewhat disagree
+                        </div>
+                        <div class="custom-col">
+                            4 - Neither agree nor disagree
+                        </div>
+                        <div class="custom-col">
+                            5 - Somewhat agree
+                        </div>
+                        <div class="custom-col">
+                            6 - Agree
+                        </div>
+                        <div class="custom-col">
+                            7 - Strongly agree
+                        </div>
+                    </div>
+                </div>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    {% for i, question in enumerated_questions %}
+                    <div class="question-box">
+                        <p><b>{{ question }}</b></p>
+                        <div class="likert-options">
+                            <br>
+                            <div class="slider-container">
+                                <div class="slider-numbers">
+                                    {% for j in range(1, 8) %}
+                                    <span class="slider-number">{{ j }}</span>
+                                    {% endfor %}
+                                </div>
+                                {{ form.answers[i-1](type="range", id="slider"+i|string, min=1, max=7, step=1, class="custom-range", oninput="updateSlider(this.value, 'sliderValue"+i|string+"')") }}
+                            </div>
+                            <div class="text-center mt-2">
+                                <span style="float: left;">1 - Strongly Disagree</span>
+                                <span style="float: center;">4 - Agree nor Disagree</span>
+                                <span style="float: right;">7 - Completely Agree</span>
+                            </div>
+                            <br>
+                            <div class="text-center">
+                                <span id="sliderValue{{ i }}">4</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <div class="text-right mt-3">
+                        {{ form.submit }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateSlider(value, targetId) {
+        document.getElementById(targetId).innerText = value;
+    }
+</script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .question-box {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .question-box p {
+        margin-bottom: 0;
+    }
+    .likert-options {
+        margin-bottom: 10px;
+    }
+    .custom-range {
+        width: 100%;
+        height: 2rem;
+        appearance: none;
+        margin: 0;
+    }
+    .custom-range::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+        background-color: #007bff;
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        position: relative;
+    }
+    .custom-range::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8px;
+        background-color: #dee2e6;
+        border-radius: 1.3rem;
+    }
+    .custom-range::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background-color: #007bff;
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        position: relative;
+    }
+    .custom-range::-moz-range-track {
+        width: 100%;
+        height: 8px;
+        background-color: #dee2e6;
+        border-radius: 1.3rem;
+    }
+    .custom-range::-ms-thumb {
+        width: 20px;
+        height: 20px;
+        background-color: #007bff;
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        position: relative;
+    }
+    .custom-range::-ms-track {
+        width: 100%;
+        height: 8px;
+        background-color: #dee2e6;
+        border-radius: 1.3rem;
+    }
+    .custom-range::-ms-fill-lower {
+        background-color: #dee2e6;
+        border-radius: 1.3rem;
+    }
+      .slider-label-left {
+        position: absolute;
+        left: 150px;
+    }
+    .slider-label-right {
+        position: absolute;
+        right: 150px;
+    }
+    .slider-numbers {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        top: -5px;
+    }
+    .custom-col {
+    flex: 0 0 14.28%; /* 100% / 7 columns */
+    max-width: 14.28%;
+    text-align: center;
+    }
+
+</style>
+
+{% endblock %}

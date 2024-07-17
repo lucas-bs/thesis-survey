@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-10 col-md-8 col-lg-6">
+            <h2 class="text-center mt-4">Questionnaire 2: Question {{ scale_number }}/4</h2>
+            <div class="card my-4 p-4 shadow-sm">
+                <div>The following statements may apply more or less to you. To what extent do
+                    you think each statement applies to you personally?<p></p></div>
+
+                <div class="question-box">
+                    <p><strong>{{ scale.question | safe }}</strong></p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    {% for option in form.question %}
+                        <div class="form-check">
+                            {{ option(class="form-check-input") }}
+                            {{ option.label(class="form-check-label") }}
+                            <p></p>
+                        </div>
+                    {% endfor %}
+
+                    {{ form.submit(class="btn btn-primary mt-3") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .question-box {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .question-box p {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}

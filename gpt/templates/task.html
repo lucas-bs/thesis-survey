@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    {% set parts = message.split('|') %}
+    <script>
+        swal({
+            text: "{{ parts[0] }}",
+            icon: "{{ url_for('static', filename=parts[1]) }}",
+            button: "OK",
+        });
+    </script>
+    {% endfor %}
+</div>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 d-flex justify-content-center">
+            <div class="total-money-box">
+                Total Money: €<span id="total-money">{{ total_money }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="row">
+                {% if session.treatment_gpt == 1 %}
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-8">
+                        <div class="card my-4 p-4 shadow-sm">
+                            {% if task.image %}
+                                <img src="{{ url_for('static', filename=task.image) }}" class="img-fluid mb-3" alt="Task Image">
+                            {% endif %}
+                            <p>{{ task.question | safe }}</p>
+
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+
+                                {% if task.type == 'multiple_choice' %}
+                                    {% for option in form.question %}
+                                        <div class="form-check">
+                                            {{ option(class="form-check-input") }}
+                                            {{ option.label(class="form-check-label") }}
+                                        </div>
+                                    {% endfor %}
+                                {% elif task.type == 'numerical' or task.type == 'open_ended' %}
+                                    {{ form.answer(class="form-control") }}
+                                {% endif %}
+
+                                {{ form.submit(class="btn btn-primary mt-3") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {% elif session.treatment_gpt == 2 %}
+                <div class="col-12 col-lg-6">
+                    <div class="card my-4 p-4 shadow-sm">
+                        {% if task.image %}
+                            <img src="{{ url_for('static', filename=task.image) }}" class="img-fluid mb-3" alt="Task Image">
+                        {% endif %}
+                        <p>{{ task.question | safe }}</p>
+
+                        <form method="POST">
+                            {{ form.hidden_tag() }}
+
+                            {% if task.type == 'multiple_choice' %}
+                                {% for option in form.question %}
+                                    <div class="form-check">
+                                        {{ option(class="form-check-input") }}
+                                        {{ option.label(class="form-check-label") }}
+                                    </div>
+                                {% endfor %}
+                            {% elif task.type == 'numerical' or task.type == 'open_ended' %}
+                                {{ form.answer(class="form-control") }}
+                            {% endif %}
+
+                            <p></p>
+                            <div class="question-box">
+                                <div class="row justify-content-center">
+                                    <strong>Please discuss with the chatbot before taking your final decision</strong>
+                                </div>
+                            </div>
+
+                            {{ form.submit(class="btn btn-primary mt-3") }}
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <br>
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h4 class="mb-0">Chat with AI</h4>
+                        </div>
+                        <div class="card-body" id="chat-body" style="height: 600px; overflow-y: auto; display: flex; flex-direction: column;">
+                            <!-- Chat messages will be dynamically added here -->
+                            {% for conversation in chat_conversation %}
+                                {% if conversation.role == "user" %}
+                                    <div class="message user-message p-2 rounded mb-2">{{ conversation.message }}</div>
+                                {% elif conversation.role == "assistant" %}
+                                    <div class="message bot-message p-2 rounded mb-2">{{ conversation.message }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="card-footer">
+                            <div class="input-group" style="z-index: 9999; position: relative;">
+                                <input type="text" id="user-input" class="form-control" placeholder="Type your message..."/>
+                                <div class="input-group-append">
+                                    <button id="send-btn" class="btn btn-dark">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if session.treatment_gpt == 2 %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const socket = io();
+
+    const chatBody = document.getElementById('chat-body');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    let currentBotMessage = null;
+    let chatId = {{ current_chat.id | tojson | safe }};
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const message = userInput.value.trim();
+        if (message) {
+            addMessageToChat('user', message);
+            socket.emit('chat_message', { message: message, chat_id: chatId });
+            userInput.value = '';
+            currentBotMessage = addMessageToChat('bot', '');
+        }
+    }
+
+    function addMessageToChat(role, message) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', `${role}-message`, 'p-2', 'rounded', 'mb-2');
+        messageElement.textContent = message;
+        chatBody.appendChild(messageElement);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        return messageElement;
+    }
+
+    socket.on('stream_response', (data) => {
+        if (currentBotMessage) {
+            currentBotMessage.textContent += data.message;
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+    });
+</script>
+{% endif %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .message {
+        display: block;
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+    .user-message {
+        background-color: #343b48;
+        color: white;
+        align-self: flex-end;
+        text-align: right;
+    }
+    .bot-message {
+        background-color: #e9ecef;
+        color: black;
+        align-self: flex-start;
+        text-align: left;
+    }
+    .input-group {
+        display: flex;
+        width: 100%;
+    }
+    .input-group .form-control {
+        flex: 1;
+    }
+    .input-group-append {
+        display: flex;
+    }
+    .input-group-append .btn {
+        margin-left: 0;
+    }
+    .card-body {
+        flex-grow: 1;
+    }
+    .total-money-box {
+        padding: 10px; /* Increase padding for a bigger box */
+        background-color: #343a40;
+        color: white;
+        border-radius: 5px;
+        font-size: 2em; /* Increase font size */
+        text-align: center; /* Center align the text */
+        max-width: 300px; /* Set a maximum width if needed */
+        width: 100%; /* Make the box responsive */
+    }
+    .question-box {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+{% endblock %}
