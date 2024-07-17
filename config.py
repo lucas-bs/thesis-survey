@@ -10,7 +10,8 @@ import os
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///data.db"
 
-SECRET_KEY = "d32rsdfn121dmkao11q422da1LLLo"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 OPENAI_MODEL = "gpt-4o"
