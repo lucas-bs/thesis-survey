@@ -94,5 +94,5 @@ class DemographicsForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(DemographicsForm, self).__init__(*args, **kwargs)
-        countries = read_countries_from_file('/Users/lucas/PycharmProjects/thesis/gpt/static/countries.txt')
+        countries = read_countries_from_file('/static/countries.txt')
         self.country.choices = [('', 'Select a country')] + [(country, country) for country in countries]
