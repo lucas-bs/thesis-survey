@@ -72,3 +72,11 @@ class Demographics(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     user = db.relationship('Users', backref='demographics')
+
+
+class CompetitionEntry(db.Model):
+    __tablename__ = 'competition_entries'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    amount_collected = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=func.now(), nullable=False)
