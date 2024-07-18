@@ -660,7 +660,51 @@ def demographic():
         )
         db.session.add(demographics)
         db.session.commit()
-        return redirect(url_for('thank_you'))  # Redirect to a thank you page
+        return redirect(url_for('final'))  # Redirect to a thank you page
 
     return render_template('demographics.html', form=form)
 
+
+@app.route("/final", methods=['GET', 'POST'])
+def final():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
+
+    total_money = session["total_money"]
+
+    user.finished = True
+    user.finished_at = datetime.now()
+    db.session.commit()
+
+    if request.method == 'POST':
+        # Handle competition entry form submission
+        email = request.form.get('email')
+        amount_collected = total_money
+
+        # Validate email (basic validation)
+        if not email or '@' not in email:
+            flash('Please enter a valid email address.', 'error')
+            return redirect(url_for('final'))
+
+        # Check if email already exists in competition entries
+        existing_entry = CompetitionEntry.query.filter_by(email=email).first()
+        if existing_entry:
+            flash('This email has already been entered into the competition.', 'error')
+            return redirect(url_for('final'))
+
+        # Create new competition entry
+        new_entry = CompetitionEntry(email=email, amount_collected=amount_collected)
+        db.session.add(new_entry)
+        db.session.commit()
+
+        flash('You have successfully entered the competition. '
+              'We will notify you by email in case you win the raffle.', 'success')
+        return redirect(url_for('logout'))  # Redirect to your home or index page after successful entry
+
+    return render_template("final.html", user=user, total_money=total_money)
