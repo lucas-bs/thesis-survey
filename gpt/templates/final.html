@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for message in get_flashed_messages() %}
+<br>
+<div class="container">
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+</div>
+{% endfor %}
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="chat-container">
+            <div class="row justify-content-center">
+                <div class="col-12 d-flex justify-content-center">
+                    <h2>Thank you for taking the survey!</h2>
+                </div>
+            </div>
+
+            <br>
+            <br>
+            <p>
+                <b>We really appreciate your participation.</b>
+                <br>
+                As mentioned in the beginning, you have now the opportunity to win the money you collected.
+            </p>
+            <div class="card my-4 p-4 shadow-sm">
+                In a few weeks, a random draw will be held to determine which participants will receive the money they collected
+                during the experiment.
+                <br>
+                To participate, please provide your email address below.
+                <br>
+                We assure you that we will only use this email address to notify you if you are selected as a winner.
+                <br>
+                Your email will be saved solely with the total amount of funds collected,
+                ensuring that your personal data remains separate.
+                <br>
+                <br>
+                Enter your email address to enter the competition:
+                <br>
+                <br>
+                <form method="POST" action="{{ url_for('final') }}">
+                <div class="form-group">
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Enter Competition</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
