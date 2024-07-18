@@ -1,6 +1,6 @@
 # access with gpt.config['NAME']
 
-DEBUG = True
+DEBUG = False
 
 import os
 
