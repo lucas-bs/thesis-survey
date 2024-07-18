@@ -3,6 +3,7 @@ from flask_socketio import emit
 from openai import OpenAI
 import random
 import string
+from datetime import datetime
 
 from . import app, socketio, db
 from .models import Users, Chat, Conversation, SurveyResponse, Demographics, BretResponses
