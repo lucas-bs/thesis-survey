@@ -6,7 +6,7 @@ import string
 from datetime import datetime
 
 from . import app, socketio, db
-from .models import Users, Chat, Conversation, SurveyResponse, Demographics, BretResponses
+from .models import Users, Chat, Conversation, SurveyResponse, Demographics, BretResponses, CompetitionEntry
 from .forms import MultipleChoiceForm, ScaleForm, AttitudeForm, ControlForm, DemographicsForm, LikertScaleForm
 
 
