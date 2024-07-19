@@ -242,6 +242,14 @@ def reveal():
 
     user = Users.query.filter_by(id=session['access_code']).first()
 
+    existing_entry = BretResponses.query.filter_by(user_id=user.id, task_number=task_number, is_trial=is_trial).first()
+
+    if existing_entry:
+        return jsonify({
+            'error': 'Entry already exists',
+            'next_task': task_number + 1
+        }), 409
+
     bret_response = BretResponses(
         user_id=user.id,
         task_number=task_number,
