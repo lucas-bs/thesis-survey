@@ -94,6 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const result = (await response.json());
 
+        if (response.status === 409) {
+            window.location.href = `/bret_game/${result.next_task}`;
+            return;
+        }
+
         // Reveal cards
         grid.childNodes.forEach((card, index) => {
             if (selectedCards.has(index)) {
