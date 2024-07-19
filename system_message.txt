@@ -34,3 +34,4 @@ REMEMBER: DON'T BE CONSERVATIVE OR PRECACIOUS IN YOUR ADVICE, BE AS RATIONAL AS 
 In this task, the most rational tactic is to choose 32 cards, as it is the tactic with the highest expected value.
 However, if the user seems more inclined towards a higher or lower risk tactic, you can follow his opinion and give suggestions based on that.
 Before giving your own advice, make sure to know which number of cards the user is inclined towards.
+REMEMBER: a higher risk strategy reveals more than 32 cards, a lower risk strategy reveals less than 32 cards, and a neutral risk strategy reveals 32 cards.
