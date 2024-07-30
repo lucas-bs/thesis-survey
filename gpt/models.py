@@ -64,7 +64,7 @@ class Demographics(db.Model):
     __tablename__ = 'demographics'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=False)
-    year_of_birth = db.Column(db.Integer, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(50), nullable=False)
     education = db.Column(db.String(100), nullable=False)
     profession = db.Column(db.String(100), nullable=False)
