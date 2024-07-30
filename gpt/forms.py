@@ -61,9 +61,9 @@ class LikertScaleForm(FlaskForm):
 
 class DemographicsForm(FlaskForm):
     current_year = datetime.now().year
-    year_of_birth = IntegerField('Year of Birth', validators=[
+    age = IntegerField('Age', validators=[
         DataRequired(),
-        NumberRange(min=current_year-120, max=current_year-18, message="Please enter a valid year")
+        NumberRange(min=18, max=100, message="Please enter a valid age")
     ])
     gender = SelectField('Gender', choices=[
         ('', 'Select gender'),
