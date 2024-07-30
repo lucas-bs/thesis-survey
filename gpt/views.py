@@ -499,7 +499,7 @@ def demographic():
     if form.validate_on_submit():
         demographics = Demographics(
             user_id=user.id,
-            year_of_birth=form.year_of_birth.data,
+            age=form.age.data,
             gender=form.gender.data,
             education=form.education.data,
             profession=form.profession.data,
