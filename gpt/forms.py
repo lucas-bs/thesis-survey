@@ -80,15 +80,6 @@ class DemographicsForm(FlaskForm):
         ('doctorate', 'Doctorate'),
         ('other', 'Other')
     ], validators=[DataRequired()])
-    profession = SelectField('Profession', choices=[
-        ('', 'Select profession'),
-        ('student', 'Student'),
-        ('employed', 'Employed'),
-        ('self_employed', 'Self-employed'),
-        ('unemployed', 'Unemployed'),
-        ('retired', 'Retired'),
-        ('other', 'Other')
-    ], validators=[DataRequired()])
     country = SelectField('Country of Residence', choices=[], validators=[DataRequired()])
     submit = SubmitField('Submit')
 
