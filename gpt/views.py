@@ -290,7 +290,7 @@ def trust(question_n):
     user = Users.query.filter_by(id=session['access_code']).first()
 
     if user.treatment_gpt == 1:
-        return redirect(url_for('loc', scale_number=1)))
+        return redirect(url_for('loc', scale_number=1))
 
     questions = [
         "Using the AI improves my task performance.",
