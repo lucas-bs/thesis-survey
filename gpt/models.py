@@ -67,7 +67,6 @@ class Demographics(db.Model):
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.String(50), nullable=False)
     education = db.Column(db.String(100), nullable=False)
-    profession = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
