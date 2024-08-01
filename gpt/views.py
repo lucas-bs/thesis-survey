@@ -290,7 +290,7 @@ def trust(question_n):
     user = Users.query.filter_by(id=session['access_code']).first()
 
     if user.treatment_gpt == 1:
-        return redirect(url_for('loc'))
+        return redirect(url_for('loc', scale_number=1)))
 
     questions = [
         "Using the AI improves my task performance.",
@@ -499,7 +499,6 @@ def demographic():
             age=form.age.data,
             gender=form.gender.data,
             education=form.education.data,
-            profession=form.profession.data,
             country=form.country.data
         )
         db.session.add(demographics)
