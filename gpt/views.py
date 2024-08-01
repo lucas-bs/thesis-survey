@@ -290,7 +290,7 @@ def trust(question_n):
     user = Users.query.filter_by(id=session['access_code']).first()
 
     if user.treatment_gpt == 1:
-        return redirect(url_for('control'))
+        return redirect(url_for('loc'))
 
     questions = [
         "Using the AI improves my task performance.",
@@ -344,9 +344,6 @@ def loc(scale_number):
         return redirect(url_for('login'))
 
     user = Users.query.filter_by(id=session['access_code']).first()
-
-    if user.treatment_gpt == 1:
-        return redirect(url_for('control'))
 
     scales = [
         {
