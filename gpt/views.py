@@ -293,22 +293,27 @@ def trust(question_n):
         return redirect(url_for('loc', scale_number=1))
 
     questions = [
-        "Using the AI improves my task performance.",
-        "Using the AI in my task increases my productivity.",
-        "Using the AI enhances my effectiveness in my task.",
-        "I find the AI to be useful in my task.",
-        "The decision to bet was due to the AI's evaluation.",
-        "The decision to bet was due to my action.",
-        "The decision to bet was due to something other than the AI's or my actions.",
-        "The AI took responsibility for its actions.",
-        "The AI always provides the advice I require to make my decision.",
-        "The AI performs reliably.",
-        "The AI responds the same way under the same conditions at different times.",
-        "I can rely on the AI to function properly.",
-        "The AI analyzes problems consistently.",
-        "My typical approach is to trust new information technologies until they prove to me that I shouldn’t.",
-        "I usually trust in information technology until it gives me a reason not to.",
-        "I generally give an information technology the benefit of the doubt when I first use it."
+        "For routine transactions, I would rather interact with an artificially intelligent system than with a human.",
+        "Artificial Intelligence can provide new economic opportunities for this country.",
+        "Organisations use Artificial Intelligence unethically.",
+        "Artificially intelligent systems can help people feel happier.",
+        "I am impressed by what Artificial Intelligence can do.",
+        "I think artificially intelligent systems make many errors.",
+        "I am interested in using artificially intelligent systems in my daily life.",
+        "I find Artificial Intelligence sinister.",
+        "Artificial Intelligence might take control of people.",
+        "I think Artificial Intelligence is dangerous.",
+        "Artificial Intelligence can have positive impacts on people’s wellbeing.",
+        "Artificial Intelligence is exciting.",
+        "I would be grateful if you could select Strongly agree.",
+        "An artificially intelligent agent would be better than an employee in many routine jobs.",
+        "There are many beneficial applications of Artificial Intelligence.",
+        "I shiver with discomfort when I think about future uses of Artificial Intelligence.",
+        "Artificially intelligent systems can perform better than humans.",
+        "Much of society will benefit from a future full of Artificial Intelligence.",
+        "I would like to use Artificial Intelligence in my own job.",
+        "People like me will suffer if Artificial Intelligence is used more and more.",
+        "Artificial Intelligence is used to spy on people."
     ]
 
     if question_n > len(questions):
