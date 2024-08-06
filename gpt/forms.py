@@ -49,12 +49,10 @@ class ControlForm(FlaskForm):
 class LikertScaleForm(FlaskForm):
     question = RadioField('Question', choices=[
         ('1', '1. Strongly disagree'),
-        ('2', '2. Disagree'),
-        ('3', '3. Somewhat disagree'),
-        ('4', '4. Neither agree nor disagree'),
-        ('5', '5. Somewhat agree'),
-        ('6', '6. Agree'),
-        ('7', '7. Strongly agree')
+        ('2', '2. Somewhat disagree'),
+        ('3', '3. Neutral'),
+        ('4', '4. Somewhat agree'),
+        ('5', '5. Strongly agree')
     ], validators=[validators.DataRequired()])
     submit = SubmitField('Submit', render_kw={"class": "btn btn-primary mt-3"})
 
