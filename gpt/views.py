@@ -116,7 +116,8 @@ def generate_long_text(messages, system_message):
         messages=persona + messages,
         temperature=0.5,
         stream=True,
-        max_tokens=1000
+        max_tokens=1000,
+        response_format={"type": "text"}
     )
     return result
 
