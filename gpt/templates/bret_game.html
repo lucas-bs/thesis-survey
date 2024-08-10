@@ -70,7 +70,7 @@
                         </div>
                         <form action="{{ url_for('bret_game', task_number=task_number + 1) }}" method="get" class="d-flex justify-content-end">
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-dark">Next</button>
+                                <button type="submit" class="btn btn-dark" id="next-button">Next</button>
                             </div>
                         </form>
                         <br>
@@ -145,7 +145,7 @@
             <br>
             <form action="{{ url_for('bret_game', task_number=task_number + 1) }}" method="get" class="d-flex justify-content-end">
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-dark">Next</button>
+                    <button type="submit" class="btn btn-dark" id="next-button">Next</button>
                 </div>
             </form>
             <br>
