@@ -7,6 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let gamePhase = 'selection';
     let isSelecting = false;
     let gamePlayed = false;
+    const nextButton = document.getElementById('next-button');
+    if (nextButton) {
+        nextButton.disabled = true; // Disable the Next button when the page loads
+    }
 
 
     // Create grid
@@ -120,7 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
         revealBtn.disabled = true;
         gamePhase = 'end';
         gamePlayed = true;
+        enableNextButton();
     });
+
+    function enableNextButton() {
+        if (nextButton) {
+            nextButton.disabled = false;
+        }
+    }
 
 /*
     revealBtn.addEventListener('click', () => {
