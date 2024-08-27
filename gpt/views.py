@@ -368,7 +368,7 @@ def loc(scale_number):
         },
         {
             'type': 'scale',
-            'question': "Whether at work or in my private life: What I do is mainly determined by others.",
+            'question': "Whether at work or in my private life, what I do is mainly determined by others.",
             'form': ScaleForm,
             'choices': [('1', '1. Does not apply at all'), ('2', '2. Applies a bit'),
                         ('3', '3. Applies somewhat'), ('4', '4. Applies mostly'), ('5', '5. Applies completely')]
