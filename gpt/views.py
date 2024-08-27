@@ -295,7 +295,7 @@ def trust(question_n):
 
     questions = [
         "For routine transactions, I would rather interact with an artificially intelligent system than with a human.",
-        "Artificial Intelligence can provide new economic opportunities for this country.",
+        "Artificial Intelligence can provide new economic opportunities for my country.",
         "Organisations use Artificial Intelligence unethically.",
         "Artificially intelligent systems can help people feel happier.",
         "I am impressed by what Artificial Intelligence can do.",
