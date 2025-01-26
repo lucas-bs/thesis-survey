@@ -7,7 +7,7 @@ from datetime import datetime
 
 from . import app, socketio, db
 from .models import Users, Chat, Conversation, SurveyResponse, Demographics, BretResponses, CompetitionEntry
-from .forms import MultipleChoiceForm, ScaleForm, AttitudeForm, ControlForm, DemographicsForm, LikertScaleForm
+from .forms import MultipleChoiceForm, ScaleForm, AttitudeForm, ControlForm, DemographicsForm, LikertScaleForm, ChoiceForm, AIUsageForm
 
 
 # importing openai API
@@ -160,6 +160,36 @@ def handle_message(data):
     db.session.commit()
 
 
+@app.route("/ai_familiarity", methods=["GET", "POST"])
+def ai_familiarity():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+    if user.treatment_gpt == 1:
+        return redirect(url_for('intro'))
+
+    question = "How often, if at all, do you use generative AI tools or chatbots for any purpose?"
+    form = AIUsageForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+        answer = form.ai_usage_frequency.data
+        new_response = SurveyResponse(
+            user_id=user.id,
+            scale="familiarity",
+            task_number=1,
+            question=question,
+            answer=answer
+        )
+        db.session.add(new_response)
+        db.session.commit()
+
+        return redirect(url_for("intro"))
+
+    return render_template("familiarity.html", form=form)
+
+
 # route for introduction page
 @app.route("/introduction", methods=["GET", "POST"])
 def intro():
@@ -173,7 +203,7 @@ def intro():
     return render_template("introduction.html")
 
 
-# route for trial page: trial_n =1 is instructions, trial_n=2 is trials
+# route for trial page: trial_n=1 is instructions, trial_n=2 is trials
 @app.route("/trial/<int:trial_n>", methods=["GET", "POST"])
 def trial(trial_n):
     if not session.get('authenticated'):
@@ -189,7 +219,7 @@ def trial(trial_n):
     return render_template("trial.html", trial_n=trial_n)
 
 
-# route for real bret task: task_number=1 and 3 is intructions, task_number=2 and 4 are the experiments
+# route for real bret task: task_number=1 and 3 are instructions, task_number=2 and 4 are the experiments
 @app.route("/bret_game/<int:task_number>", methods=["GET", "POST"])
 def bret_game(task_number):
     if not session.get('authenticated'):
@@ -233,6 +263,7 @@ def reveal():
     selected_cards = request.json['selected_cards']
     task_number = request.json['task_number']
     is_trial = request.json['is_trial']
+    confidence = request.json['confidence']
     bomb_index = random.randint(0, 63)
 
     if bomb_index in selected_cards:
@@ -265,6 +296,17 @@ def reveal():
     if not is_trial:
         session['total_money'] += round(score, 2)
 
+    if confidence:
+        survey_response = SurveyResponse(
+            user_id=user.id,
+            scale='confidence_scale',
+            task_number=task_number,
+            question='How confident are you in the decision you just made?',
+            answer=confidence
+        )
+        db.session.add(survey_response)
+        db.session.commit()
+
     return jsonify({
         'bomb_index': bomb_index,
         'score': score
@@ -278,10 +320,134 @@ def total_money():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        return redirect(url_for('trust', question_n=1))
+        return redirect(url_for('attention_check'))
     return render_template('total_money.html', total_money=session['total_money'])
 
 
+@app.route("/attention_check", methods=['GET', 'POST'])
+def attention_check():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    if request.method == 'POST':
+        answer = request.form.get('attention_answer')
+        survey_response = SurveyResponse(
+            user_id=user.id,
+            scale='attention_check',
+            task_number=1,
+            question='How many total cards were in the grid?',
+            answer=answer
+        )
+        db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('pr'))
+
+    return render_template('attention_check.html')
+
+
+@app.route("/pr", methods=['GET', 'POST'])
+def pr():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    if request.method == 'POST':
+        for i in range(1, 4):
+            answer = request.form.get(f'pr_question_{i}')
+            survey_response = SurveyResponse(
+                user_id=user.id,
+                scale='perceived_responsibility',
+                task_number=i,
+                question=f'PR Question {i}',
+                answer=answer
+            )
+            db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('trust'))
+
+    return render_template('pr.html')
+
+
+@app.route("/trust", methods=['GET', 'POST'])
+def trust():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    if user.treatment_gpt == 1:
+        return redirect(url_for('locus'))
+
+    questions = [
+        "1. I am confident in the AI tool. I feel that it works well.",
+        "2. The outputs of the AI tool are very predictable.",
+        "3. The AI tool is very reliable. I can count on it to be correct all the time.",
+        "4. I feel safe that when I rely on the AI tool, I will get the right answers.",
+        "5. I like using the AI tool for decision-making."
+    ]
+
+    if request.method == 'POST':
+        for i in range(1, 6):
+            answer = request.form.get(f'trust_question_{i}')
+            survey_response = SurveyResponse(
+                user_id=user.id,
+                scale='trust_ai',
+                task_number=i,
+                question=questions[i-1],
+                answer=answer
+            )
+            db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('locus'))  # Redirect to the next page
+
+    return render_template('trust1.html', questions=questions)
+
+
+@app.route("/locus", methods=['GET', 'POST'])
+def locus():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    questions = [
+        "1. When I make plans, I am almost certain that I can make them work.",
+        "2. Getting a good job depends mainly on being in the right place at the right time.",
+        "3. Getting people to do the right things depends upon ability; luck has nothing to do with it.",
+        "4. What happens to me is my own doing.",
+        "5. Many of the unhappy things in people's lives are partly due to bad luck.",
+        "6. Many times I feel that I have little influence over the things that happen to me."
+    ]
+
+    if request.method == 'POST':
+        for i in range(1, 7):
+            answer = request.form.get(f'locus_question_{i}')
+            survey_response = SurveyResponse(
+                user_id=user.id,
+                scale='locus_of_control',
+                task_number=i,
+                question=questions[i-1],
+                answer=answer
+            )
+            db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('demographic'))
+
+    return render_template('locus.html', questions=questions)
+
+
+"""
 @app.route("/001/<int:question_n>", methods=['GET', 'POST'])
 def trust(question_n):
     if not session.get('authenticated'):
@@ -295,7 +461,7 @@ def trust(question_n):
 
     questions = [
         "For routine transactions, I would rather interact with an artificially intelligent system than with a human.",
-        "Artificial Intelligence can provide new economic opportunities for my country.",
+        "Artificial Intelligence can provide new economic opportunities for this country.",
         "Organisations use Artificial Intelligence unethically.",
         "Artificially intelligent systems can help people feel happier.",
         "I am impressed by what Artificial Intelligence can do.",
@@ -318,7 +484,7 @@ def trust(question_n):
     ]
 
     if question_n > len(questions):
-        return redirect(url_for('loc', scale_number=1))
+        return redirect(url_for('locus'))
 
     current_question = questions[question_n - 1]
     form = LikertScaleForm()
@@ -368,7 +534,7 @@ def loc(scale_number):
         },
         {
             'type': 'scale',
-            'question': "Whether at work or in my private life, what I do is mainly determined by others.",
+            'question': "Whether at work or in my private life: What I do is mainly determined by others.",
             'form': ScaleForm,
             'choices': [('1', '1. Does not apply at all'), ('2', '2. Applies a bit'),
                         ('3', '3. Applies somewhat'), ('4', '4. Applies mostly'), ('5', '5. Applies completely')]
@@ -406,6 +572,172 @@ def loc(scale_number):
         return redirect(url_for('loc', scale_number=scale_number + 1))
 
     return render_template('loc.html', scale=current_scale, form=form, scale_number=scale_number)
+
+
+
+@app.route("/loc/<int:scale_number>", methods=['GET', 'POST'])
+def loc(scale_number):
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    scales = [
+        {
+            'option_a': "Children get into trouble because their parents punish them too much.",
+            'option_b': "The trouble with most children nowadays is that their parents are too easy with them.",
+        },
+        {
+            'option_a': "Many of the unhappy things in people's lives are partly due to bad luck.",
+            'option_b': "People's misfortunes result from the mistakes they make.",
+        },
+        {
+            'option_a': "One of the major reasons why we have wars is because people don't take enough interest in politics.",
+            'option_b': "There will always be wars, no matter how hard people try to prevent them.",
+        },
+        {
+            'option_a': "In the long run people get the respect they deserve in this world.",
+            'option_b': "Unfortunately, an individual's worth often passes unrecognized no matter how hard he tries.",
+        },
+        {
+            'option_a': "The idea that teachers are unfair to students is nonsense.",
+            'option_b': "Most students don't realize the extent to which their grades are influenced by accidental happenings.",
+        },
+        {
+            'option_a': "Without the right breaks one cannot be an effective leader.",
+            'option_b': "Capable people who fail to become leaders have not taken advantage of their opportunities.",
+        },
+        {
+            'option_a': "No matter how hard you try some people just don't like you.",
+            'option_b': "People who can't get others to like them don't understand how to get along with others.",
+        },
+        {
+            'option_a': "Heredity plays the major role in determining one's personality.",
+            'option_b': "It is one's experiences in life which determine what they're like.",
+        },
+        {
+            'option_a': "I have often found that what is going to happen will happen.",
+            'option_b': "Trusting to fate has never turned out as well for me as making a decision to take a definite course of action.",
+        },
+        {
+            'option_a': "In the case of the well-prepared student there is rarely, if ever, such a thing as an unfair test.",
+            'option_b': "Many times exam questions tend to be so unrelated to course work that studying is really useless.",
+        },
+        {
+            'option_a': "Becoming a success is a matter of hard work, luck has little or nothing to do with it.",
+            'option_b': "Getting a good job depends mainly on being in the right place at the right time.",
+        },
+        {
+            'option_a': "The average citizen can have an influence in government decisions.",
+            'option_b': "This world is run by the few people in power, and there is not much the little guy can do about it.",
+        },
+        {
+            'option_a': "When I make plans, I am almost certain that I can make them work.",
+            'option_b': "It is not always wise to plan too far ahead because many things turn out to be a matter of good or bad fortune anyhow.",
+        },
+        {
+            'option_a': "There are certain people who are just no good.",
+            'option_b': "There is some good in everybody.",
+        },
+        {
+            'option_a': "In my case getting what I want has little or nothing to do with luck.",
+            'option_b': "Many times we might just as well decide what to do by flipping a coin.",
+        },
+        {
+            'option_a': "Who gets to be the boss often depends on who was lucky enough to be in the right place first.",
+            'option_b': "Getting people to do the right thing depends upon ability. Luck has little or nothing to do with it.",
+        },
+        {
+            'option_a': "As far as world affairs are concerned, most of us are the victims of forces we can neither understand nor control.",
+            'option_b': "By taking an active part in political and social affairs, the people can control world events.",
+        },
+        {
+            'option_a': "Most people don't realize the extent to which their lives are controlled by accidental happenings.",
+            'option_b': "There really is no such thing as 'luck'.",
+        },
+        {
+            'option_a': "One should always be willing to admit mistakes.",
+            'option_b': "It is usually best to cover up one's mistakes.",
+        },
+        {
+            'option_a': "It is hard to know whether or not a person really likes you.",
+            'option_b': "How many friends you have depends upon how nice a person you are.",
+        },
+        {
+            'option_a': "In the long run the bad things that happen to us are balanced by the good ones.",
+            'option_b': "Most misfortunes are the result of lack of ability, ignorance, laziness, or all three.",
+        },
+        {
+            'option_a': "With enough effort we can wipe out political corruption.",
+            'option_b': "It is difficult for people to have much control over the things politicians do in office.",
+        },
+        {
+            'option_a': "Sometimes I can't understand how teachers arrive at the grades they give.",
+            'option_b': "There is a direct connection between how hard I study and the grades I get.",
+        },
+        {
+            'option_a': "A good leader expects people to decide for themselves what they should do.",
+            'option_b': "A good leader makes it clear to everybody what their jobs are.",
+        },
+        {
+            'option_a': "Many times I feel that I have little influence over the things that happen to me.",
+            'option_b': "It is impossible for me to believe that chance or luck plays an important role in my life.",
+        },
+        {
+            'option_a': "People are lonely because they don't try to be friendly.",
+            'option_b': "There's not much use in trying too hard to please people, if they like you, they like you.",
+        },
+        {
+            'option_a': "There is too much emphasis on athletics in high school.",
+            'option_b': "Team sports are an excellent way to build character.",
+        },
+        {
+            'option_a': "What happens to me is my own doing.",
+            'option_b': "Sometimes I feel that I don't have enough control over the direction my life is taking.",
+        },
+        {
+            'option_a': "Most of the time I can't understand why politicians behave the way they do.",
+            'option_b': "In the long run the people are responsible for bad government on a national as well as on a local level.",
+        }
+    ]
+
+    # Redirect to the control page if all questions are completed
+    if scale_number > len(scales):
+        return redirect(url_for('demographic'))
+
+    current_scale = scales[scale_number - 1]
+
+    # Dynamically create the form with the current question's choices
+    form = ChoiceForm()
+    form.question.choices = [
+        ('a', current_scale['option_a']),
+        ('b', current_scale['option_b'])
+    ]
+
+    if request.method == 'POST' and form.validate():
+        answer = form.question.data
+        question_text = f"a. {current_scale['option_a']} / b. {current_scale['option_b']}"
+
+        response = SurveyResponse(
+            user_id=user.id,
+            scale="rotters_loc",
+            task_number=scale_number,
+            question=question_text,
+            answer=answer
+        )
+        db.session.add(response)
+        db.session.commit()
+
+        # Redirect to the next question
+        return redirect(url_for('loc', scale_number=scale_number + 1))
+
+    return render_template(
+        'loc.html',
+        form=form,
+        scale_number=scale_number,
+        total_questions=len(scales)
+    )
 
 
 @app.route("/attitudes/<int:question_number>", methods=['GET', 'POST'])
@@ -487,7 +819,7 @@ def control():
     enumerated_questions = list(enumerate(questions, start=1))
 
     return render_template('control.html', form=form, questions=questions, enumerated_questions=enumerated_questions)
-
+"""
 
 @app.route("/demographic", methods=['GET', 'POST'])
 def demographic():
@@ -556,4 +888,4 @@ def final():
               'We will notify you by email in case you win the raffle.', 'success')
         return redirect(url_for('logout'))  # Redirect to your home or index page after successful entry
 
-    return render_template("final.html", user=user, total_money=total_money)
+    return render_template("final1.html", user=user, total_money=total_money)
