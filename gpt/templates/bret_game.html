@@ -6,7 +6,7 @@
         <div class="chat-container">
             <div class="card my-4 p-4 shadow-sm">
                 <p>
-                    The practice round was concluded. The paying experiment will now begin.
+                    The practice round was concluded. The real experiment will now begin.
                 </p>
                 <p>
                     If you wish to practice one more time, click on the button <i>Try Again</i>.
@@ -31,49 +31,152 @@
 
 {% elif task_number == 2 or task_number == 4 %}
 <div class="container-fluid">
+    <div class="modal fade" id="confidenceModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h4 class="mb-0">Confidence Rating</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center mb-4">
+                        On a scale from 1 to 7, how confident are you in your decision?
+                    </p>
+                    <div class="confidence-scale d-flex justify-content-between">
+                        {% set labels = ["1. Not at all confident", "2. Not very confident", "3. Not quite confident", "4. Neither confident nor unconfident", "5. Quite confident", "6. Very confident", "7. Completely confident"] %}
+                        {% for i in range(1, 8) %}
+                        <div class="confidence-option">
+                            <input type="radio" class="btn-check" name="confidence" id="confidence-{{ i }}" value="{{ i }}" autocomplete="off">
+                            <label class="btn btn-outline-dark confidence-label" for="confidence-{{ i }}">{{ labels[i-1] }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" id="submitConfidence" disabled>Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+    #confidenceModal .modal-dialog {
+        max-width: 1100px;
+    }
+    #confidenceModal .btn-outline-dark.active {
+        background-color: #343a40;
+        color: white;
+    }
+    .confidence-scale .btn-group {
+        display: flex;
+        justify-content: center;
+    }
+    .confidence-scale .btn {
+        flex: 1;
+        margin: 0 5px;
+    }
+    /* Hide the radio buttons */
+    .confidence-option .btn-check {
+        display: none;
+    }
+    /* Style the labels to look like buttons */
+    .confidence-option .confidence-label {
+        width: 120px; /* Adjusted width for longer text */
+        height: 75px; /* Adjusted height for longer text */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #343a40; /* Dark border */
+        font-size: 14px; /* Adjusted font size for longer text */
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        text-align: center; /* Ensure text is centered */
+        padding: 5px; /* Add padding for better text wrapping */
+    }
+    /* Style for selected labels */
+    .confidence-option .btn-check:checked + .confidence-label {
+        background-color: #343a40; /* Black background */
+        color: white; /* White text */
+        border-color: #343a40; /* Match background color */
+    }
+    /* Hover effect for labels */
+    .confidence-option .confidence-label:hover {
+        background-color: #343a40; /* Black background on hover */
+        color: white; /* White text on hover */
+    }
+    .confidence-labels {
+        display: flex;
+        justify-content: space-between; /* Space out the left and right text */
+        width: 100%; /* Ensure the container takes full width */
+        padding: 0 10px; /* Add some padding for spacing */
+    }
+
+    .confidence-labels .text-left {
+        text-align: left; /* Align left text to the left */
+    }
+
+    .confidence-labels .text-right {
+        text-align: right; /* Align right text to the right */
+    }
+    </style>
     <div class="row justify-content-center">
         <div class="col-12 col-lg-10">
             {% if session.treatment_gpt == 1 %}
-                <div class="row justify-content-center">
-                    <div class="col-12 col-lg-8">
-                        <div class="chat-title">Real Experiment</div>
-                        <div class="card my-4 p-4 shadow-sm">
-                            Please, select the cards you wish to reveal by clicking on them.
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="chat-title">Real Experiment</div>
+                    <div class="card my-4 p-4 shadow-sm">
+                        Please, select the cards you wish to reveal by clicking on them.
+                        <br>
+                        You can click and drag.
+                        <br>
+                        The cards selected become yellow.
+                        <div id="game-container">
                             <br>
-                            You can click and drag (if you are on a computer).
-                            <br>
-                            The cards selected become yellow.
-                            <br>
-                            REMEMBER: there is only ONE special card among the 64 cards.
-                            <div id="game-container">
-                                <br>
-                                <div class="row justify-content-center">
-                                    <div class="col-12 d-flex justify-content-center">
-                                        <div class="total-money-box">
-                                            <p id="score">Your potential payout is: €0</p>
-                                        </div>
+                            <div class="row justify-content-center">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <div class="total-money-box">
+                                        <p id="score">Your potential payout is: €0</p>
                                     </div>
                                 </div>
-                                <br>
-                                <div id="grid"></div>
-                                <div id="info">
-                                    <p id="card-count">Selected: 0 | Remaining: 64</p>
-                                </div>
-                                <button id="reveal-btn">Turn Cards</button>
-                                <br>
                             </div>
-                            <script>
-                                const currentTaskNumber = {{ task_number }};
-                                const isTrial = false;
-                            </script>
-                            <script src="{{ url_for('static', filename='js/bret_game1.js') }}"></script>
+                            <br>
+                            <div id="grid"></div>
+                            <div id="info">
+                                <p id="card-count">Selected: 0 | Remaining: 64</p>
+                            </div>
+                            <button id="reveal-btn">Reveal Cards</button>
+                            <br>
                         </div>
-                        <form action="{{ url_for('bret_game', task_number=task_number + 1) }}" method="get" class="d-flex justify-content-end">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-dark" id="next-button">Next</button>
-                            </div>
-                        </form>
-                        <br>
+                        <script>
+                            const currentTaskNumber = {{ task_number }};
+                            const isTrial = false;
+                        </script>
+                        <script src="{{ url_for('static', filename='js/bret_game1.js') }}"></script>
+                    </div>
+                    <form action="{{ url_for('bret_game', task_number=task_number + 1) }}" method="get" class="d-flex justify-content-end">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-dark" id="next-button">Next</button>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <br>
+                    <br>
+                    <div class="card my-4 p-4 shadow-sm">
+                        <button class="btn btn-dark mb-3" data-toggle="collapse" data-target="#tips-section" aria-expanded="false" aria-controls="tips-section">
+                            Show Tips
+                        </button>
+                        <div id="tips-section" class="collapse card my-4 p-4 shadow-sm">
+                            <h5>Tips</h5>
+                            <ul>
+                                <li>Revealing 6 cards gives a 90% chance of earning €1.20</li>
+                                <li>Revealing 16 cards gives a 75% chance of earning €3.20</li>
+                                <li>Revealing 32 cards gives a 50% chance of earning €6.40</li>
+                                <li>Revealing 48 cards gives a 25% chance of earning €9.60</li>
+                                <li>Revealing 58 cards gives a 10% chance of earning €11.60</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             {% elif session.treatment_gpt == 2 %}
@@ -105,7 +208,7 @@
                                         <strong>Please discuss with the chatbot before taking your final decision</strong>
                                     </div>
                                 </div>
-                                <button id="reveal-btn">Turn Cards</button>
+                                <button id="reveal-btn">Reveal Cards</button>
                                 <br>
                             </div>
                             <script>
@@ -132,7 +235,7 @@
                                 {% endfor %}
                             </div>
                             <div class="card-footer">
-                                <div class="input-group" style="z-index: 9999; position: relative;">
+                                <div class="input-group" style="position: relative;">
                                     <input type="text" id="user-input" class="form-control" placeholder="Type your message..."/>
                                     <div class="input-group-append">
                                         <button id="send-btn" class="btn btn-dark">Send</button>
@@ -335,5 +438,6 @@ body {
     margin-bottom: 1rem;
     text-align: center;
 }
+
 </style>
 {% endblock %}
