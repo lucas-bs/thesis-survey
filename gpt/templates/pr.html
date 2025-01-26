@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10">
+        <p>
+        <h4>Please answer these questions regarding the last activity:</h4>
+        </p>
+        <div class="card my-4 p-4">
+            <div class="pr-container">
+                <p>
+                    <b>For each statement, select the answer that best matches your opinion. There is no right or wrong answer.</b>
+                </p>
+                <div class="questions-pr">
+                    <form action="/pr" method="post">
+                        {% set questions = [
+                        "1. The decision to bet was due to the information received during the task.",
+                            "2. The decision to bet was due to my action.",
+                            "3. The decision to bet was due to something other than the information received or my actions."
+                        ] %}
+                        {% set scale = ["1. Strongly disagree", "2. Disagree", "3. Somewhat disagree", "4. Neither agree nor disagree", "5. Somewhat agree", "6. Agree", "7. Strongly agree", "Don't know"] %}
+                        {% for i in range(1, 4) %}
+                        <div class="pr-question mb-4">
+                            <p class="question-text">{{ questions[i-1] }}</p>
+                            <div class="pr-scale d-flex justify-content-between flex-wrap">
+                                {% for j in range(1, 9) %}
+                                <div class="pr-option mb-2">
+                                    <input
+                                        type="radio"
+                                        class="btn-check"
+                                        name="pr_question_{{ i }}"
+                                        id="pr_question_{{ i }}_{{ j }}"
+                                        value="{{ scale[j-1] }}"
+                                        autocomplete="off"
+                                        required
+                                    >
+                                    <label class="btn btn-outline-dark pr-label" for="pr_question_{{ i }}_{{ j }}">
+                                        {{ scale[j-1] }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-dark">
+                                <i class="bi bi-arrow-right-circle"></i> Next
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.questions-pr {
+    padding-left: 2rem;
+    padding-right: 2rem
+}
+.pr-scale .btn-group {
+    display: flex;
+    justify-content: center;
+}
+.pr-scale .btn {
+    flex: 1;
+    margin: 0 5px;
+}
+/* Hide the radio buttons */
+.pr-option .btn-check {
+    display: none;
+}
+/* Style the labels to look like buttons */
+.pr-option .pr-label {
+    width: 120px; /* Adjusted width for longer text */
+    height: 75px; /* Adjusted height for longer text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #343a40; /* Dark border */
+    font-size: 14px; /* Adjusted font size for longer text */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center; /* Ensure text is centered */
+    padding: 5px; /* Add padding for better text wrapping */
+}
+/* Style for selected labels */
+.pr-option .btn-check:checked + .pr-label {
+    background-color: #343a40; /* Black background */
+    color: white; /* White text */
+    border-color: #343a40; /* Match background color */
+}
+/* Hover effect for labels */
+.pr-option .pr-label:hover {
+    background-color: #343a40; /* Black background on hover */
+    color: white; /* White text on hover */
+}
+</style>
+{% endblock %}
