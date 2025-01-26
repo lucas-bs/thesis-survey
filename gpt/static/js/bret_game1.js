@@ -81,19 +81,59 @@ document.addEventListener('DOMContentLoaded', () => {
     revealBtn.addEventListener('click', async () => {
         if (gamePhase !== 'selection') return;
 
+        // Only show confidence modal if not in trial
+        if (!isTrial) {
+            const confidenceModal = new bootstrap.Modal(document.getElementById('confidenceModal'), {
+                backdrop: 'static', // Prevent closing on backdrop click
+                keyboard: false // Prevent closing with the ESC key
+            });
+            console.log('Modal shown');
+            confidenceModal.show();
+
+            // Enable the submit button when a confidence level is selected
+            const confidenceOptions = document.querySelectorAll('input[name="confidence"]');
+            confidenceOptions.forEach(option => {
+                option.addEventListener('change', () => {
+                    document.getElementById('submitConfidence').disabled = false;
+                });
+            });
+
+            // Handle the submit button click
+            document.getElementById('submitConfidence').addEventListener('click', async () => {
+                const selectedConfidence = document.querySelector('input[name="confidence"]:checked');
+
+                if (!selectedConfidence) {
+                    alert('Please select a confidence level');
+                    return;
+                }
+
+                const confidenceValue = selectedConfidence.value;
+                confidenceModal.hide();
+
+                await proceedWithReveal(confidenceValue);
+            });
+        } else {
+            await proceedWithReveal();
+        }
+    });
+
+    async function proceedWithReveal(confidenceValue = null) {
         gamePhase = 'reveal';
         revealBtn.disabled = true;
+
+        const revealData = {
+            selected_cards: Array.from(selectedCards),
+            task_number: currentTaskNumber,
+            is_trial: isTrial,
+            confidence: confidenceValue  // Always include confidence, even if null
+        };
 
         const response = await fetch('/api/reveal', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                selected_cards: Array.from(selectedCards),
-                task_number: currentTaskNumber,
-                is_trial: isTrial
-            }),
+            body: JSON.stringify(revealData),
         });
 
         const result = (await response.json());
@@ -103,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Reveal cards
+        // Existing reveal logic remains the same
         grid.childNodes.forEach((card, index) => {
             if (selectedCards.has(index)) {
                 if (index === result.bomb_index) {
@@ -125,9 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
         gamePhase = 'end';
         gamePlayed = true;
         enableNextButton();
-    });
+    }
 
     function enableNextButton() {
+        const nextButton = document.getElementById('next-button');
         if (nextButton) {
             nextButton.disabled = false;
         }
