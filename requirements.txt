@@ -22,8 +22,6 @@ MarkupSafe==2.1.5
 openai==1.35.7
 packaging==24.1
 psycopg2==2.9.9
-pydantic==2.7.4
-pydantic_core==2.18.4
 pygame==2.6.0
 python-engineio==4.9.1
 python-socketio==5.11.3
