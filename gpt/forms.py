@@ -83,5 +83,32 @@ class DemographicsForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(DemographicsForm, self).__init__(*args, **kwargs)
-        countries = read_countries_from_file('gpt/static/countries.txt')
+        countries = read_countries_from_file('/Users/lucas/PycharmProjects/thesis/gpt/static/countries.txt')
         self.country.choices = [('', 'Select a country')] + [(country, country) for country in countries]
+
+
+class ChoiceForm(FlaskForm):
+    question = RadioField(
+        'Choose the statement you agree with most:',
+        choices=[],  # Choices will be dynamically passed in the route
+        validators=[DataRequired(message="Please select an option.")]
+    )
+    submit = SubmitField('Next')
+
+
+class AIUsageForm(FlaskForm):
+    ai_usage_frequency = RadioField(
+        "How often, if at all, do you use generative AI tools or chatbots for any purpose?",
+        choices=[
+            ("Daily", "Daily"),
+            ("Weekly", "Weekly"),
+            ("Monthly", "Monthly"),
+            ("A few times a year", "A few times a year"),
+            ("Never", "Never"),
+            ("Don't know", "Don't know"),
+            ("Not heard of", "Not heard of")
+        ],
+        validators=[DataRequired()]
+    )
+    submit = SubmitField("Next")
+
