@@ -170,7 +170,7 @@ def ai_familiarity():
     if user.treatment_gpt == 1:
         return redirect(url_for('intro'))
 
-    question = "How often, if at all, do you use generative AI tools or chatbots for any purpose?"
+    question = "On a scale from 1 to 7, how frequently do you use generative AI tools or chatbots for any purpose? (1 = Never, 7 = Very frequently)"
     form = AIUsageForm()
 
     if request.method == 'POST' and form.validate_on_submit():
