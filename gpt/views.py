@@ -425,12 +425,13 @@ def locus():
         "2. Getting a good job depends mainly on being in the right place at the right time.",
         "3. Getting people to do the right things depends upon ability; luck has nothing to do with it.",
         "4. What happens to me is my own doing.",
-        "5. Many of the unhappy things in people's lives are partly due to bad luck.",
-        "6. Many times I feel that I have little influence over the things that happen to me."
+        "5. Select Strongly agree in this question so we know you are paying attention.",
+        "6. Many of the unhappy things in people's lives are partly due to bad luck.",
+        "7. Many times I feel that I have little influence over the things that happen to me."
     ]
 
     if request.method == 'POST':
-        for i in range(1, 7):
+        for i in range(1, 8):
             answer = request.form.get(f'locus_question_{i}')
             survey_response = SurveyResponse(
                 user_id=user.id,
@@ -821,6 +822,7 @@ def control():
     return render_template('control.html', form=form, questions=questions, enumerated_questions=enumerated_questions)
 """
 
+
 @app.route("/demographic", methods=['GET', 'POST'])
 def demographic():
     if not session.get('authenticated'):
@@ -886,6 +888,25 @@ def final():
 
         flash('You have successfully entered the competition. '
               'We will notify you by email in case you win the raffle.', 'success')
-        return redirect(url_for('logout'))  # Redirect to your home or index page after successful entry
+        return redirect(url_for('end'))
 
-    return render_template("final1.html", user=user, total_money=total_money)
+    return render_template("final.html", user=user, total_money=total_money)
+
+
+@app.route("/end", methods=['GET', 'POST'])
+def end():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    return render_template("final1.html")
+
+
+@app.route("/qualtrics", methods=["GET", "POST"])
+def qualtrics():
+    session['authenticated'] = False
+    if 'access_code' in session:
+        session.pop('access_code')
+    if 'treatment_gpt' in session:
+        session.pop('treatment_gpt')
+    return redirect('https://ucplbusiness.co1.qualtrics.com/jfe/form/SV_54QO0eZywIczBbg')
