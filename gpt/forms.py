@@ -98,16 +98,18 @@ class ChoiceForm(FlaskForm):
 
 class AIUsageForm(FlaskForm):
     ai_usage_frequency = RadioField(
-        "How often, if at all, do you use generative AI tools or chatbots for any purpose?",
+        "On a scale from 1 to 7, how frequently do you use generative AI tools or chatbots for any purpose? (1 = Never, 7 = Very frequently)",
         choices=[
-            ("Daily", "Daily"),
-            ("Weekly", "Weekly"),
-            ("Monthly", "Monthly"),
-            ("A few times a year", "A few times a year"),
-            ("Never", "Never"),
-            ("Not heard of", "Not heard of")
+            ("1", "1 - Never"),
+            ("2", "2"),
+            ("3", "3"),
+            ("4", "4"),
+            ("5", "5"),
+            ("6", "6"),
+            ("7", "7 - Very frequently")
         ],
         validators=[DataRequired()]
     )
     submit = SubmitField("Next")
+
 
