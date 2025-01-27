@@ -83,7 +83,7 @@ class DemographicsForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(DemographicsForm, self).__init__(*args, **kwargs)
-        countries = read_countries_from_file('gpt/static/countries.txt')
+        countries = read_countries_from_file('/Users/lucas/PycharmProjects/thesis/gpt/static/countries.txt')
         self.country.choices = [('', 'Select a country')] + [(country, country) for country in countries]
 
 
@@ -105,7 +105,6 @@ class AIUsageForm(FlaskForm):
             ("Monthly", "Monthly"),
             ("A few times a year", "A few times a year"),
             ("Never", "Never"),
-            ("Don't know", "Don't know"),
             ("Not heard of", "Not heard of")
         ],
         validators=[DataRequired()]
