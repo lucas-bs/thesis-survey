@@ -13,12 +13,12 @@
                 </p>
                 <div class="questions-locus">
                     <form action="/locus" method="post">
-                        {% set scale = ["1. Strongly disagree", "2. Disagree", "3. Somewhat disagree", "4. Neither agree nor disagree", "5. Somewhat agree", "6. Agree", "7. Strongly agree", "Don't know"] %}
-                        {% for i in range(1, 7) %}
+                        {% set scale = ["1. Strongly disagree", "2. Disagree", "3. Somewhat disagree", "4. Neither agree nor disagree", "5. Somewhat agree", "6. Agree", "7. Strongly agree"] %}
+                        {% for i in range(1, 8) %}
                         <div class="locus-question mb-4">
                             <p class="question-text">{{ questions[i-1] }}</p>
                             <div class="locus-scale d-flex justify-content-between flex-wrap">
-                                {% for j in range(1, 9) %}
+                                {% for j in range(1, 8) %}
                                 <div class="locus-option mb-2">
                                     <input
                                         type="radio"
