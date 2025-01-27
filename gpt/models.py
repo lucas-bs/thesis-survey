@@ -54,7 +54,7 @@ class BretResponses(db.Model):
     task_number = db.Column(db.Integer, nullable=False)
     is_trial = db.Column(db.Boolean, nullable=False)
     n_cards = db.Column(db.Integer, nullable=False)
-    final_pay = db.Column(db.Integer, nullable=False)
+    final_pay = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     user = db.relationship('Users', backref='bret_response')
