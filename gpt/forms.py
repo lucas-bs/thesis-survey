@@ -103,7 +103,7 @@ class AIUsageForm(FlaskForm):
             ("1", "1 - Never"),
             ("2", "2"),
             ("3", "3"),
-            ("4", "4"),
+            ("4", "4 - Sometimes"),
             ("5", "5"),
             ("6", "6"),
             ("7", "7 - Very frequently")
