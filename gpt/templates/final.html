@@ -18,8 +18,6 @@
                     <h2>Thank you for taking the survey!</h2>
                 </div>
             </div>
-
-            <br>
             <br>
             <p>
                 <b>We really appreciate your participation.</b>
@@ -42,18 +40,21 @@
                 <br>
                 <br>
                 <form method="POST" action="{{ url_for('final') }}">
-                <div class="form-group">
-                    <input type="email" id="email" name="email" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Enter Competition</button>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enter Competition</button>
                 </form>
             </div>
-            <div class="card my-4 p-4 shadow-sm">
-                <b>For users taking the survey on SurveySwap:</b>
-                The following code gives you credits that can be used to get free research participants at SurveySwap.io:
-                <br>
-                <a href="https://surveyswap.io/sr/YUVJ-G75X-6C4F" target="_blank">https://surveyswap.io/sr/YUVJ-G75X-6C4F</a>
-                Or, alternatively, enter the code manually: YUVJ-G75X-6C4F
+            <div>
+                <p>
+                    <b>If you do not wish to enter the competition, please click here to continue.</b>
+                </p>
+                <div class="d-flex justify-content-end">
+                    <form method="POST" action="{{ url_for('end') }}">
+                        <button type="submit" class="btn btn-dark">Continue</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
