@@ -393,13 +393,12 @@ def pr_new():
 
     user = Users.query.filter_by(id=session['access_code']).first()
 
-    """
     if user.treatment_gpt == 2:
         questions = [
             "1. How responsible do you feel for the outcomes of the decisions made during the task?",
             "2. To what extent do you feel your decision was influenced by your own judgment?",
-            "3. To what extent do you feel your decision was influenced by the AI's recommendations?",
-            "4. I would have made the same decision without the AI's help."
+            "3. To what extent do you feel your decision was influenced by the tips (given by the AI) received during the activity?",
+            "4. I would have made the same decision without the tips received during the activity."
         ]
     else:
         questions = [
@@ -408,6 +407,7 @@ def pr_new():
             "3. To what extent do you feel your decision was influenced by the tips received during the activity?",
             "4. I would have made the same decision without the tips."
         ]
+        
     """
     questions = [
         "1. How responsible do you feel for the outcomes of the decisions made during the task?",
@@ -415,6 +415,7 @@ def pr_new():
         "3. To what extent do you feel your decision was influenced by the tips received during the activity?",
         "4. I would have made the same decision without the tips received during the activity."
     ]
+    """
 
     if request.method == 'POST':
         for i in range(1, 5):
