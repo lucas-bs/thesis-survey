@@ -301,7 +301,7 @@ def reveal():
             user_id=user.id,
             scale='confidence_scale',
             task_number=task_number,
-            question='How confident are you in the decision you just made?',
+            question='How confident are you in your decision regarding the number of cards selected?',
             answer=confidence
         )
         db.session.add(survey_response)
