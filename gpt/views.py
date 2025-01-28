@@ -28,7 +28,7 @@ def generate_random_code():
 @app.route("/", methods=["GET", "POST"])
 def login():
     if session.get('authenticated'):
-        return redirect(url_for('intro'))
+        return redirect(url_for('end'))
 
     if request.method == 'POST':
         access_code = generate_random_code()
@@ -58,7 +58,7 @@ def login():
             db.session.commit()
             return redirect(url_for("chat", chat_id=new_user_chat.id))
         else:
-            return redirect(url_for("intro"))
+            return redirect(url_for("locus"))
 
     return render_template("welcome.html")
 
@@ -185,9 +185,45 @@ def ai_familiarity():
         db.session.add(new_response)
         db.session.commit()
 
-        return redirect(url_for("intro"))
+        return redirect(url_for("locus"))
 
     return render_template("familiarity.html", form=form)
+
+
+@app.route("/locus", methods=['GET', 'POST'])
+def locus():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    questions = [
+        "1. When I make plans, I am almost certain that I can make them work.",
+        "2. Getting a good job depends mainly on being in the right place at the right time.",
+        "3. Getting people to do the right things depends upon ability; luck has nothing to do with it.",
+        "4. What happens to me is my own doing.",
+        "5. Select Strongly agree in this question so we know you are paying attention.",
+        "6. Many of the unhappy things in people's lives are partly due to bad luck.",
+        "7. Many times I feel that I have little influence over the things that happen to me."
+    ]
+
+    if request.method == 'POST':
+        for i in range(1, 8):
+            answer = request.form.get(f'locus_question_{i}')
+            survey_response = SurveyResponse(
+                user_id=user.id,
+                scale='locus_of_control',
+                task_number=i,
+                question=questions[i-1],
+                answer=answer
+            )
+            db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('intro'))
+
+    return render_template('locus.html', questions=questions)
 
 
 # route for introduction page
@@ -301,7 +337,7 @@ def reveal():
             user_id=user.id,
             scale='confidence_scale',
             task_number=task_number,
-            question='How confident are you in your decision regarding the number of cards selected?',
+            question='How confident are you in your decision about the number of cards selected?',
             answer=confidence
         )
         db.session.add(survey_response)
@@ -344,9 +380,50 @@ def attention_check():
         db.session.add(survey_response)
         db.session.commit()
 
-        return redirect(url_for('pr'))
+        return redirect(url_for('pr_new'))
 
     return render_template('attention_check.html')
+
+
+@app.route("/pr_new", methods=['GET', 'POST'])
+def pr_new():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    if user.treatment_gpt == 2:
+        questions = [
+            "1. How responsible do you feel for the outcomes of the decisions made during the task?",
+            "2. To what extent do you feel your decision was influenced by your own judgment?",
+            "3. To what extent do you feel your decision was influenced by the AI's recommendations?",
+            "4. I would have made the same decision without the AI's help."
+        ]
+    else:
+        questions = [
+            "1. How responsible do you feel for the outcomes of the decisions made during the task?",
+            "2. To what extent do you feel your decision was influenced by your own judgment?",
+            "3. To what extent do you feel your decision was influenced by the tips received during the activity?",
+            "4. I would have made the same decision without the tips."
+        ]
+
+    if request.method == 'POST':
+        for i in range(1, 5):
+            answer = request.form.get(f'pr_question_{i}')
+            survey_response = SurveyResponse(
+                user_id=user.id,
+                scale='perceived_responsibility_new',
+                task_number=i,
+                question=questions[i-1],
+                answer=answer
+            )
+            db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('pr'))
+
+    return render_template('pr_new.html', questions=questions)
 
 
 @app.route("/pr", methods=['GET', 'POST'])
@@ -384,7 +461,7 @@ def trust():
     user = Users.query.filter_by(id=session['access_code']).first()
 
     if user.treatment_gpt == 1:
-        return redirect(url_for('locus'))
+        return redirect(url_for('demographic'))
 
     questions = [
         "1. I am confident in the AI tool. I feel that it works well.",
@@ -407,11 +484,11 @@ def trust():
             db.session.add(survey_response)
         db.session.commit()
 
-        return redirect(url_for('locus'))  # Redirect to the next page
+        return redirect(url_for('demographic'))
 
     return render_template('trust1.html', questions=questions)
 
-
+"""
 @app.route("/locus", methods=['GET', 'POST'])
 def locus():
     if not session.get('authenticated'):
@@ -448,7 +525,7 @@ def locus():
     return render_template('locus.html', questions=questions)
 
 
-"""
+
 @app.route("/001/<int:question_n>", methods=['GET', 'POST'])
 def trust(question_n):
     if not session.get('authenticated'):
