@@ -416,6 +416,18 @@ def pr_new():
         "4. I would have made the same decision without the tips received during the activity."
     ]
     """
+    
+    scales = [
+        # Scale for Question 1
+        ["1. Not at all responsible", "2", "3", "4. Moderately responsible", "5", "6", "7. Completely responsible"],
+        # Scale for Question 2
+        ["1. Not at all influenced", "2", "3", "4. Moderately influenced", "5", "6", "7. Entirely influenced"],
+        # Scale for Question 3
+        ["1. Not at all influenced", "2", "3", "4. Moderately influenced", "5", "6", "7. Entirely influenced"],
+        # Scale for Question 4 (keep original agreement labels)
+        ["1. Strongly disagree", "2. Disagree", "3. Somewhat disagree",
+         "4. Neither agree nor disagree", "5. Somewhat agree", "6. Agree", "7. Strongly agree"]
+    ]
 
     if request.method == 'POST':
         for i in range(1, 5):
@@ -432,7 +444,7 @@ def pr_new():
 
         return redirect(url_for('pr'))
 
-    return render_template('pr_new.html', questions=questions)
+    return render_template('pr_new.html', questions=questions, scales=scales)
 
 
 @app.route("/pr", methods=['GET', 'POST'])
