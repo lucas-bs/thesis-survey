@@ -941,9 +941,34 @@ def demographic():
         )
         db.session.add(demographics)
         db.session.commit()
-        return redirect(url_for('final'))  # Redirect to a thank you page
+        return redirect(url_for('survey_check'))  # Redirect to a thank you page
 
     return render_template('demographics.html', form=form)
+
+
+@app.route("/survey_check", methods=["GET", "POST"])
+def survey_check():
+    if not session.get('authenticated'):
+        flash('You are not authenticated...', 'warning')
+        return redirect(url_for('login'))
+
+    user = Users.query.filter_by(id=session['access_code']).first()
+
+    if request.method == 'POST':
+        answer = request.form.get('survey_check_answer')
+        survey_response = SurveyResponse(
+            user_id=user.id,
+            scale='survey_check',
+            task_number=1,
+            question='Have you previously completed this survey in any of our earlier sessions?',
+            answer=answer
+        )
+        db.session.add(survey_response)
+        db.session.commit()
+
+        return redirect(url_for('final'))
+
+    return render_template('survey_check.html')
 
 
 @app.route("/final", methods=['GET', 'POST'])
